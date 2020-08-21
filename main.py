@@ -77,6 +77,7 @@ for j in range(len(urls)):
     tables = soup.find_all('table')
     k = 0
     for table in tables:
+        # Skip the first 2 table.
         if k != 2:
             k += 1
             continue
