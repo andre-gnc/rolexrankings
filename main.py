@@ -23,7 +23,7 @@ window_height = window_size['height']
 window_height_half = int(window_height / 2)
 
 # Loading all records of players.
-for i in range(LOOP):
+for index_button in range(LOOP):
     try:
         button = wait.until(ec.element_to_be_clickable((By.XPATH, '/html/body/app/main/div[2]/div[4]/button')))
 
@@ -41,72 +41,67 @@ urls = []
 for element_url in elements_url:
     urls.append(element_url.get_attribute('href'))
 
-# dict_data = {}
 col_headers = ('Player ID', 'Player Name', 'Last name', 'Other Name', 'Gender', 'Year', 'Events Played', '1st',
                '2nd', '3rd', '4th-10th', 'MC', 'Year End Rank')
 
 workbook = xlsxwriter.Workbook('data.xlsx')
 worksheet = workbook.add_worksheet()
 bold = workbook.add_format({'bold': True})
-irow = 0
-icol = 0
+index_row = 0
+# index_col = 0
 
-for n in range(len(col_headers)):
-    worksheet.write(irow, icol, col_headers[n], bold)
-    icol += 1
+# Write the headers.
+for counter_col, col_header in enumerate(col_headers):
+    worksheet.write(index_row, counter_col, col_header, bold)
 
 # For each record, find and save the data.
-for j in range(len(urls)):
+for index_urls, url in enumerate(urls):
     # Souping each url.
-    response = requests.get(urls[j])
+    response = requests.get(url)
     data = response.text
     soup = BeautifulSoup(data, 'html.parser')
 
-    # Saving player's identity.
-    print(j + 1)
-    slash_position = urls[j].rfind('/')
-    player_id = urls[j][slash_position + 1:]
-    name = soup.find('small').find_previous().text
-    space_position = name.rfind(' ')
-    lastname = name[space_position + 1:]
-    othername = name[:space_position]
+    # Monitor its progress.
+    print(index_urls + 1)
 
-    vcols = [player_id, name, lastname, othername, GENDER]
+    # Saving player's identity.
+    slash_position = url.rfind('/')
+    player_id = url[slash_position + 1:]
+    name = soup.find('small').find_previous().text
+    position_space = name.rfind(' ')
+    lastname = name[position_space + 1:]
+    othername = name[:position_space]
+
+    value_cols = [player_id, name, lastname, othername, GENDER]
 
     # Saving the table.
     tables = soup.find_all('table')
-    k = 0
-    for table in tables:
-        # Skip the first 2 table..
-        if k != 2:
-            k += 1
+    for index_table, table in enumerate(tables, 1):
+        # The required table is the 3rd.
+        if index_table != 3:
             continue
-        else:
-            # Sorting each row out.
-            rows = table.find_all('tr')
-            m = 0
-            for row in rows:
-                # Skip the last row (summary).
-                if m + 1 == len(rows):
-                    break
-                # Skip the first row (header).
-                elif m == 0:
-                    m += 1
-                    continue
-                else:
-                    m += 1
-                    irow += 1
-                    icol = 0
 
-                    # Write to data.xlsx.
-                    for vcol in vcols:
-                        worksheet.write(irow, icol, vcol)
-                        icol += 1
+        rows = table.find_all('tr')
 
-                    # Sort each column out and save to vcols.
-                    columns = row.find_all('td')
-                    for column in columns:
-                        worksheet.write(irow, icol, column.text)
-                        icol += 1
+        # Remove the last row (Tot).
+        rows.pop()
+
+        for counter_row, row in enumerate(rows):
+            # The required rows are from the 2nd.
+            # Skip the 0 indexed.
+            if counter_row == 0:
+                continue
+
+            index_row += 1
+
+            # Write the values of the first 5 columns.
+            for counter_col, value_col in enumerate(value_cols):
+                worksheet.write(index_row, counter_col, value_col)
+
+            columns = row.find_all('td')
+            # Write the last values of other columns from the 6th.
+            # It's 5 since start at 0.
+            for counter_col, column in enumerate(columns, 5):
+                worksheet.write(index_row, counter_col, column.text)
     break
 workbook.close()
