@@ -9,6 +9,6 @@ The project was succesfully done. I got approximately 1300 records of players. B
 
 First, I used Selenium to load the whole document. There was a button that should be clicked to load it. Then I grabbed the data by Requests and BeautifulSoup. Last, I made an xlsx file to save them by xlsxwriter.
 
-If you just test the code, i suggest to set the LOOP = 1 in line 13 and "break" in line 110. It will generate small xlsx file of a player's data. Otherwise, if the code will be run fully then set that LOOP more than 28 (LOOP = 40 for example) and set the "break" as comment (# break).
+If you just test the code, i suggest to set the LOOP = 1 in line 13 and "break" in line 106. It will generate small xlsx file of a player's data. Otherwise, if the code will be run fully then set that LOOP more than 28 (LOOP = 40 for example) and set the "break" as comment (# break).
 
 Once again, please give me your advice. Thank you. 
