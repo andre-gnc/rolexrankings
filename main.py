@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import xlsxwriter
 
 TIMEOUT = 20
-LOOP = 40
+LOOP = 1
 GENDER = 'Female'
 
 driver = webdriver.Chrome(executable_path=os.path.abspath('chromedriver.exe'))
@@ -107,5 +107,5 @@ for j in range(len(urls)):
                     for column in columns:
                         worksheet.write(irow, icol, column.text)
                         icol += 1
-    # break
+    break
 workbook.close()
